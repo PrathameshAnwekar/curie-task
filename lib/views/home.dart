@@ -1,19 +1,35 @@
+import 'package:curie_task/controllers/home_controller.dart';
+import 'package:curie_task/models/transaction.dart';
 import 'package:curie_task/utils/size_config.dart';
 import 'package:curie_task/views/upi_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Home extends HookWidget {
-  static const routeName = '/home';
-  final formKey = GlobalKey<FormState>();
-  Home({super.key});
+class Home extends StatefulHookConsumerWidget {
+  const Home({super.key});
+  static const routeName = "/home";
+
+  @override
+  ConsumerState<Home> createState() => _HomeState();
+}
+
+class _HomeState extends ConsumerState<Home> {
+  var formKey = GlobalKey<FormState>();
+  final amountController = TextEditingController();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    amountController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final amountController = useTextEditingController();
-    final focusNode = useFocusNode();
     return WillPopScope(
       onWillPop: () async {
-        return false;
+        return true;
       },
       child: Form(
         key: formKey,
@@ -21,47 +37,92 @@ class Home extends HookWidget {
           resizeToAvoidBottomInset: true,
           backgroundColor: const Color(0xff1a73e8),
           appBar: AppBar(
-            leading: const Icon(Icons.navigate_before),
-            actions: [],
-          ),
-          body: Stack(
-            children: [
-              Column(children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    CircleAvatar(
-                      backgroundImage: AssetImage("assets/images/man.jpg"),
-                      radius: 30,
-                    ),
-                    Icon(
-                      Icons.navigate_next_outlined,
-                      color: Colors.white,
-                    ),
-                    CircleAvatar(
-                      backgroundImage: AssetImage("assets/images/woman.jpg"),
-                      radius: 30,
-                    )
-                  ],
-                ),
-                const Text("Payment to Red Bus"),
-                const Text("(redbus@axis)"),
-                SizedBox(
-                  height: 100,
-                  width: 50,
-                  child: TextField(
-                    focusNode: focusNode,
-                    decoration: const InputDecoration(
-                      prefixIcon: Text("₹ "),
-                      prefixIconConstraints:
-                          BoxConstraints(minWidth: 0, minHeight: 0),
-                    ),
-                    keyboardType: TextInputType.number,
-                    controller: amountController,
-                  ),
-                )
-              ])
+            elevation: 0,
+            leading: GestureDetector(onTap: () {
+              Navigator.pop(context);
+            },child: const Icon(Icons.navigate_before)),
+            actions: const [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Icon(Icons.more_vert),
+              )
             ],
+          ),
+          body: SizedBox(
+            width: SizeConfig.screenWidth,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 15.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        CircleAvatar(
+                          backgroundImage: AssetImage("assets/images/man.jpg"),
+                          radius: 40,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.navigate_next_outlined,
+                            size: 30,
+                            color: Colors.white,
+                          ),
+                        ),
+                        CircleAvatar(
+                          backgroundImage:
+                              AssetImage("assets/images/woman.jpg"),
+                          radius: 40,
+                        )
+                      ],
+                    ),
+                  ),
+                  const Text(
+                    "Payment to Red Bus",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  const Text(
+                    "(redbus@axis)",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.only(top: 30, bottom: 5),
+                      width: 120,
+                      child: TextFormField(
+                        maxLength: 6,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 45),
+                        // focusNode: focusNode,
+                        validator: (value) {
+                          return value!.isEmpty ? "Invalid Amount" : null;
+                        },
+                        decoration: const InputDecoration(
+                          enabledBorder: InputBorder.none,
+                          counterText: "",
+                          prefixIcon: Text(
+                            "₹ ",
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                          prefixIconConstraints:
+                              BoxConstraints(minWidth: 0, minHeight: 0),
+                        ),
+                        keyboardType: TextInputType.number,
+                        controller: amountController,
+                      ),
+                    ),
+                  ),
+                  const Text(
+                    "Payment via Billdesk",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ])
+              ],
+            ),
           ),
           floatingActionButton: FloatingActionButton(
             backgroundColor: Colors.white,
@@ -96,8 +157,8 @@ class Home extends HookWidget {
                             width: SizeConfig.screenWidth * 0.8,
                             child: ElevatedButton(
                               onPressed: () {
-                                Navigator.of(context)
-                                    .pushNamed(UPIScreen.routeName);
+                                HomeController.proceedToPay(
+                                    formKey, ref, amountController, context);
                               },
                               style: ButtonStyle(
                                   backgroundColor:
@@ -115,7 +176,7 @@ class Home extends HookWidget {
                               ),
                             ),
                           ),
-                          Text(
+                          const Text(
                             "In partnership with YOUR BANK",
                             style: TextStyle(
                                 color: Colors.grey,

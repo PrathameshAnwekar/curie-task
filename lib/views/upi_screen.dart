@@ -1,7 +1,7 @@
 import 'package:curie_task/models/custom_numpad.dart';
-import 'package:curie_task/utils/logger.dart';
+import 'package:curie_task/models/transaction.dart';
 import 'package:curie_task/utils/size_config.dart';
-import 'package:curie_task/views/home.dart';
+import 'package:curie_task/views/success_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -12,6 +12,7 @@ class UPIScreen extends HookConsumerWidget {
   static const routeName = '/upi_screen';
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final transaction = ref.watch(transactionProvider);
     final pinController = useTextEditingController();
     var obsuctingCharacter = useState("*");
 
@@ -26,9 +27,12 @@ class UPIScreen extends HookConsumerWidget {
         ),
         toolbarHeight: 80,
         actions: [
-          Image.asset(
-            "assets/images/upi_logo.png",
-            width: 50,
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Image.asset(
+              "assets/images/upi_logo.png",
+              width: 80,
+            ),
           ),
         ],
       ),
@@ -38,34 +42,35 @@ class UPIScreen extends HookConsumerWidget {
           child: Container(
             color: const Color(0xff1b317d),
             width: SizeConfig.screenWidth,
-            child: const ListTile(
+            child:  ListTile(
               title: Text(
-                "Verve Financial Services",
+                transaction.receiver,
                 style: TextStyle(color: Colors.white),
               ),
-              trailing: Text("₹ 1.00", style: TextStyle(color: Colors.white)),
+              trailing: Text("₹ ${transaction.amount}", style: TextStyle(color: Colors.white)),
             ),
           ),
         ),
         Positioned(
           top: SizeConfig.screenHeight * 0.25,
-          left:0,
-          right: 0,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-               Text("ENTER UPI PIN"),
-              SizedBox(
-                width: 50,
-              ),
-              Icon(Icons.remove_red_eye),
-              GestureDetector(onTap: () {
-                obsuctingCharacter.value = (obsuctingCharacter.value == " "
-                    ? "*"
-                    : " ");
-              }, child: Text("SHOW"))
-            ],
+          child: Center(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                const Text("ENTER UPI PIN"),
+                const SizedBox(
+                  width: 50,
+                ),
+                const Icon(Icons.remove_red_eye),
+                GestureDetector(
+                    onTap: () {
+                      obsuctingCharacter.value =
+                          (obsuctingCharacter.value == " " ? "*" : " ");
+                    },
+                    child: const Text(" SHOW"))
+              ],
+            ),
           ),
         ),
         Positioned(
@@ -97,7 +102,13 @@ class UPIScreen extends HookConsumerWidget {
                       .substring(0, pinController.text.length - 1);
                 },
                 onSubmit: () {
-                  Navigator.of(context).pushNamed(Home.routeName);
+                  if (pinController.text.length < 4) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Please enter a valid UPI PIN")));
+                    return;
+                  }
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      SuccessScreen.routeName, (route) => false);
                 },
                 controller: pinController)),
       ]),

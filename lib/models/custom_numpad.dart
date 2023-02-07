@@ -23,7 +23,7 @@ class NumPad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xfff1f1f1),
+      color: const Color(0xfff1f1f1),
       child: Column(
         children: [
           const SizedBox(height: 20),
