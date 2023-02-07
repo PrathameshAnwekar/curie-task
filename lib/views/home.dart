@@ -1,4 +1,5 @@
 import 'package:curie_task/utils/size_config.dart';
+import 'package:curie_task/views/upi_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -94,7 +95,10 @@ class Home extends HookWidget {
                           SizedBox(
                             width: SizeConfig.screenWidth * 0.8,
                             child: ElevatedButton(
-                              onPressed: null,
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .pushNamed(UPIScreen.routeName);
+                              },
                               style: ButtonStyle(
                                   backgroundColor:
                                       MaterialStateProperty.all<Color>(
@@ -111,7 +115,13 @@ class Home extends HookWidget {
                               ),
                             ),
                           ),
-                        Text("In partnership with YOUR BANK", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),) ]),
+                          Text(
+                            "In partnership with YOUR BANK",
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ]),
                   );
                 },
               );

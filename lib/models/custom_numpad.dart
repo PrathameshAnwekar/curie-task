@@ -1,7 +1,7 @@
+import 'package:curie_task/utils/size_config.dart';
 import 'package:flutter/material.dart';
 
-// KeyPad widget
-// This widget is reusable and its buttons are customizable (color, size)
+//COPIEd from https://www.kindacode.com/article/create-a-custom-numpad-number-keyboard-in-flutter/
 class NumPad extends StatelessWidget {
   final double buttonSize;
   final Color buttonColor;
@@ -13,8 +13,8 @@ class NumPad extends StatelessWidget {
   const NumPad({
     Key? key,
     this.buttonSize = 70,
-    this.buttonColor = Colors.indigo,
-    this.iconColor = Colors.amber,
+    this.buttonColor = const Color(0xfff1f1f1),
+    this.iconColor = const Color(0xff1b3280),
     required this.delete,
     required this.onSubmit,
     required this.controller,
@@ -23,12 +23,12 @@ class NumPad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 30, right: 30),
+      color: Color(0xfff1f1f1),
       child: Column(
         children: [
           const SizedBox(height: 20),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.start,
             // implement the number keys (from 0 to 9) with the NumberButton widget
             // the NumberButton widget is defined in the bottom of this file
             children: [
@@ -155,15 +155,10 @@ class NumberButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: size,
-      height: size,
+      width: SizeConfig.screenWidth * 0.33,
+      height: 35,
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(size / 2),
-          ),
-        ),
+        style: ElevatedButton.styleFrom(backgroundColor: color, elevation: 0),
         onPressed: () {
           controller.text += number.toString();
         },
@@ -171,7 +166,9 @@ class NumberButton extends StatelessWidget {
           child: Text(
             number.toString(),
             style: const TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 30),
+                fontWeight: FontWeight.bold,
+                color: Color(0xff1b3280),
+                fontSize: 30),
           ),
         ),
       ),

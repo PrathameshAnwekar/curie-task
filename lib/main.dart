@@ -1,5 +1,6 @@
 import 'package:curie_task/utils/initializer.dart';
 import 'package:curie_task/views/home.dart';
+import 'package:curie_task/views/upi_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
       home: const Initializer(),
       routes: {
         Home.routeName: (context) =>  Home(),
+        UPIScreen.routeName: (context) =>  UPIScreen(),
       },
     );
   }
